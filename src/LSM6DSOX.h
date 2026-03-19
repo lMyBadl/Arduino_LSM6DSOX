@@ -35,16 +35,6 @@ class LSM6DSOXClass {
     float accelerationSampleRate(); // Sampling rate of the sensor.
     int accelerationAvailable(); // Check for available data from accelerometer
 
-    // Gyroscope
-    int readGyroscope(float& x, float& y, float& z); // Results are in degrees/second.
-    float gyroscopeSampleRate(); // Sampling rate of the sensor.
-    int gyroscopeAvailable(); // Check for available data from gyroscope
-
-    // Temperature
-    int readTemperature(int& temperature_deg);
-    int readTemperatureFloat(float& temperature_deg);
-    int temperatureAvailable();
-
   private:
     int readRegister(uint8_t address);
     int readRegisters(uint8_t address, uint8_t* data, size_t length);

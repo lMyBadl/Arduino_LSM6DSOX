@@ -84,15 +84,9 @@ int LSM6DSOXClass::begin()
     return 0;
   }
 
-  //set the gyroscope control register to work at 104 Hz, 2000 dps and in bypass mode
-  writeRegister(LSM6DSOX_CTRL2_G, 0x4C);
-
   // Set the Accelerometer control register to work at 104 Hz, 4 g,and in bypass mode and enable ODR/4
   // low pass filter (check figure9 of LSM6DSOX's datasheet)
-  writeRegister(LSM6DSOX_CTRL1_XL, 0x4A);
-
-  // set gyroscope power mode to high performance and bandwidth to 16 MHz
-  writeRegister(LSM6DSOX_CTRL7_G, 0x00);
+  writeRegister(LSM6DSOX_CTRL1_XL, 0xA6);
 
   // Set the ODR config register to ODR/4
   writeRegister(LSM6DSOX_CTRL8_XL, 0x09);
@@ -142,76 +136,6 @@ int LSM6DSOXClass::accelerationAvailable()
 }
 
 float LSM6DSOXClass::accelerationSampleRate()
-{
-  return 104.0F;
-}
-
-int LSM6DSOXClass::readGyroscope(float& x, float& y, float& z)
-{
-  int16_t data[3];
-
-  if (!readRegisters(LSM6DSOX_OUTX_L_G, (uint8_t*)data, sizeof(data))) {
-    x = NAN;
-    y = NAN;
-    z = NAN;
-
-    return 0;
-  }
-
-  x = data[0] * 2000.0 / 32768.0;
-  y = data[1] * 2000.0 / 32768.0;
-  z = data[2] * 2000.0 / 32768.0;
-
-  return 1;
-}
-
-int LSM6DSOXClass::gyroscopeAvailable()
-{
-  if (readRegister(LSM6DSOX_STATUS_REG) & 0x02) {
-    return 1;
-  }
-
-  return 0;
-}
-
-int LSM6DSOXClass::readTemperature(int& temperature_deg)
-{
-  float temperature_float = 0;
-  readTemperatureFloat(temperature_float);
-
-  temperature_deg = static_cast<int>(temperature_float);
-
-  return 1;
-}
-
-int LSM6DSOXClass::readTemperatureFloat(float& temperature_deg)
-{
-  /* Read the raw temperature from the sensor. */
-  int16_t temperature_raw = 0;
-
-  if (readRegisters(LSM6DSOX_OUT_TEMP_L, reinterpret_cast<uint8_t*>(&temperature_raw), sizeof(temperature_raw)) != 1) {
-    return 0;
-  }
-
-  /* Convert to °C. */
-  static int const TEMPERATURE_LSB_per_DEG = 256;
-  static int const TEMPERATURE_OFFSET_DEG = 25;
-
-  temperature_deg = (static_cast<float>(temperature_raw) / TEMPERATURE_LSB_per_DEG) + TEMPERATURE_OFFSET_DEG;
-
-  return 1;
-}
-
-int LSM6DSOXClass::temperatureAvailable()
-{
-  if (readRegister(LSM6DSOX_STATUS_REG) & 0x04) {
-    return 1;
-  }
-
-  return 0;
-}
-
-float LSM6DSOXClass::gyroscopeSampleRate()
 {
   return 104.0F;
 }
